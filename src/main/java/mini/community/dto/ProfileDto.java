@@ -1,28 +1,46 @@
 package mini.community.dto;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
+import mini.community.domain.Profile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProfileDto {
+    private Long id;
     private UserDto user;
     private String company;
     private String website;
     private String location;
     private String githubUsername;
     private String bio;
+    private String image;
     private List<String> skills;
+    private List<GetExperienceDto> experience;
+    private List<GetEducationDto> educations;
 
-    @Builder
-    public  ProfileDto(UserDto user, String company, String website, String location, String githubUsername, String bio, List<String> skills) {
-        this.user = user;
-        this.company = company;
-        this.website = website;
-        this.location = location;
-        this.githubUsername = githubUsername;
-        this.bio = bio;
-        this.skills = skills;
+
+    public static ProfileDto fromEntity(Profile profile) {
+        return ProfileDto.builder()
+                .id(profile.getId())
+                .user(UserDto.fromEntity(profile.getUser()))
+                .company(profile.getCompany())
+                .website(profile.getWebsite())
+                .location(profile.getLocation())
+                .githubUsername(profile.getGithubUsername())
+                .bio(profile.getBio())
+                .image(profile.getImage())
+                .skills(profile.getProfileSkills().stream()
+                        .map(ps -> ps.getSkill().getName())
+                        .collect(Collectors.toList()))
+                .experience(profile.getExperiences().stream().map(GetExperienceDto::from).collect(Collectors.toList()))
+                .educations(profile.getEducations().stream().map(GetEducationDto::fromEntity).collect(Collectors.toList()))
+                .build();
     }
+
 }

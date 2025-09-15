@@ -8,20 +8,20 @@ import mini.community.domain.User;
 public class UserDto {
 
     private Long id;
-    private String username;
+    private String name;
     private String email;
 
     @Builder
-    public UserDto(Long id, String username, String email) {
+    public UserDto(Long id, String name, String email) {
         this.id = id;
-        this.username = username;
+        this.name = name;
         this.email = email;
     }
 
-    public static UserDto from(User user) {
+    public static UserDto fromEntity(User user) {
         return UserDto.builder()
                 .id(user.getId())
-                .username(user.getUsername())
+                .name(user.getName())
                 .email(user.getEmail())
                 .build();
     }

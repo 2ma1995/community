@@ -34,4 +34,5 @@ public class Dislike {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
 }

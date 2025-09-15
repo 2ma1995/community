@@ -5,9 +5,11 @@ import lombok.RequiredArgsConstructor;
 import mini.community.domain.Profile;
 import mini.community.domain.ProfileSkill;
 import mini.community.domain.Skill;
+import mini.community.domain.User;
 import mini.community.dto.ProfileDto;
 import mini.community.dto.UserDto;
 import mini.community.repository.ProfileRepository;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,18 +22,6 @@ public class ProfileService {
 
     @Transactional
     public List<ProfileDto> getProfiles() {
-        List<Profile> profiles = profileRepository.findAll();
-        List<ProfileDto> profileDtos = new ArrayList<>();
-        for (Profile profile : profiles) {
-            profileDtos.add(ProfileDto.builder()
-                    .user(UserDto.from(profile.getUser()))
-                    .bio(profile.getBio())
-                    .company(profile.getCompany())
-                    .location(profile.getLocation())
-                    .githubUsername(profile.getGithubUsername())
-                    .skills(profile.getProfileSkills().stream().map(ProfileSkill::getSkill).collect(Collectors.toList()))
-                    .build());
-        }
-        return profileDtos;
+        return profileRepository.findAll().stream().map(ProfileDto::fromEntity).collect(Collectors.toList());
     }
 }
