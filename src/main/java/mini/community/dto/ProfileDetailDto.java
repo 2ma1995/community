@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProfileDto {
+public class ProfileDetailDto {
     private Long id;
     private UserDto user;
     private String company;
@@ -25,8 +25,8 @@ public class ProfileDto {
     private List<GetEducationDto> educations;
 
 
-    public static ProfileDto fromEntity(Profile profile) {
-        return ProfileDto.builder()
+    public static ProfileDetailDto fromEntity(Profile profile) {
+        return ProfileDetailDto.builder()
                 .id(profile.getId())
                 .user(UserDto.fromEntity(profile.getUser()))
                 .company(profile.getCompany())

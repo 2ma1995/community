@@ -56,4 +56,11 @@ public class Profile extends BaseTimeEntity {
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProfileSkill> profileSkills = new ArrayList<>();
 
+
+    public void addExperience(Experience experience) {
+        this.experiences.add(experience);
+        if (experience.getProfile() != null) {
+            experience.setProfile(this);
+        }
+    }
 }
