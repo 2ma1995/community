@@ -72,10 +72,15 @@ public class Profile extends BaseTimeEntity {
     }
 
     public void changeSkills(List<Skill> skills) {
-        this.skills.clear();
+        this.profileSkills.clear();
 
         for (Skill skill : skills) {
-            this.addSkill(skill);
+            ProfileSkill profileSkill = new ProfileSkill();
+
+            profileSkill.setProfile(this);
+            profileSkill.setSkill(skill);
+
+            this.profileSkills.add(profileSkill);
         }
     }
 
