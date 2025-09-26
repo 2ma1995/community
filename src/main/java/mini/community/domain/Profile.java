@@ -2,6 +2,7 @@ package mini.community.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import mini.community.dto.UpsertProfileDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Profile extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,6 +58,26 @@ public class Profile extends BaseTimeEntity {
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProfileSkill> profileSkills = new ArrayList<>();
 
+    public void update(UpsertProfileDto profileDto) {
+        if (profileDto.getStatus() != null) {
+            this.status = profileDto.getStatus();
+        }
+        if (profileDto.getCompany() != null) {this.company = profileDto.getCompany();}
+        if (profileDto.getWebsite() != null) {this.website = profileDto.getWebsite();}
+        if (profileDto.getLocation() != null) {this.location = profileDto.getLocation();}
+        if (profileDto.getBio() != null) {this.bio = profileDto.getBio();}
+        if (profileDto.getImage() != null) {this.image = profileDto.getImage();}
+        if (profileDto.getStatus() != null) {this.status = profileDto.getStatus();}
+        if (profileDto.getGithubUsername() != null) {this.githubUsername = profileDto.getGithubUsername();}
+    }
+
+    public void changeSkills(List<Skill> skills) {
+        this.skills.clear();
+
+        for (Skill skill : skills) {
+            this.addSkill(skill);
+        }
+    }
 
     public void addExperience(Experience experience) {
         this.experiences.add(experience);
