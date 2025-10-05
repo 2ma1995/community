@@ -2,7 +2,7 @@ package mini.community.dto;
 
 import lombok.Getter;
 import lombok.ToString;
-import mini.community.domain.User;
+import mini.community.User.entity.User;
 
 @Getter
 @ToString

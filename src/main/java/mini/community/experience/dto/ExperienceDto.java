@@ -1,8 +1,8 @@
-package mini.community.dto;
+package mini.community.experience.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import mini.community.domain.Experience;
+import mini.community.experience.domain.Experience;
 
 import java.time.LocalDate;
 

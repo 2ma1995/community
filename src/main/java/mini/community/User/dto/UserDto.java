@@ -1,8 +1,8 @@
-package mini.community.dto;
+package mini.community.User.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import mini.community.domain.User;
+import mini.community.User.entity.User;
 
 @Getter
 public class UserDto {

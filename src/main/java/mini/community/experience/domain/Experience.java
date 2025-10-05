@@ -1,7 +1,8 @@
-package mini.community.domain;
+package mini.community.experience.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import mini.community.Profile.entity.Profile;
 
 import java.time.LocalDate;
 

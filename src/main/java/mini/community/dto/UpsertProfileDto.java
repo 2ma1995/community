@@ -1,8 +1,8 @@
 package mini.community.dto;
 
 import lombok.Getter;
-import mini.community.domain.Profile;
-import mini.community.domain.User;
+import mini.community.Profile.entity.Profile;
+import mini.community.User.entity.User;
 
 import java.util.ArrayList;
 

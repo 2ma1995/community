@@ -1,11 +1,12 @@
-package mini.community.service;
+package mini.community.User.service;
 
 import lombok.RequiredArgsConstructor;
-import mini.community.domain.User;
+import mini.community.User.dto.UserDto;
+import mini.community.User.entity.User;
 import mini.community.dto.*;
 import mini.community.global.exception.BadRequestException;
 import mini.community.global.token.TokenManager;
-import mini.community.repository.UserRepository;
+import mini.community.User.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,7 @@ public class UserService {
         );
         return UserDto.builder()
                 .id(user.getId())
-                .name(user.getName())
+                .name(user.getUsername())
                 .email(user.getEmail())
                 .build();
     }
@@ -51,10 +52,10 @@ public class UserService {
     @Transactional(readOnly = true)
     public TokenResponseDto login(LoginDto loginDto) {
         User user = userRepository.findByEmail(loginDto.getEmail()).orElseThrow(
-                ()->new BadRequestException("user not found")
+                ()->new BadRequestException("유저를 찾을수 없습니다.")
         );
         if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new BadRequestException("wrong password");
+            throw new BadRequestException("비밀번호가 틀렸습니다.");
         }
         return toTokenResponseDto(user);
     }

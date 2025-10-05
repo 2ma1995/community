@@ -1,7 +1,7 @@
-package mini.community.dto;
+package mini.community.Profile.dto;
 
 import lombok.*;
-import mini.community.domain.Profile;
+import mini.community.Profile.entity.Profile;
 
 import java.util.List;
 @Getter
@@ -18,7 +18,7 @@ public class ProfileListDto {
     public static ProfileListDto fromEntity(Profile profile) {
         return ProfileListDto.builder()
                 .id(profile.getId())
-                .username(profile.getUser().getName())
+                .username(profile.getUser().getUsername())
                 .bio(profile.getBio())
                 .skills(profile.getProfileSkills().stream().map(ps->ps.getSkill().getName()).toList()).build();
     }

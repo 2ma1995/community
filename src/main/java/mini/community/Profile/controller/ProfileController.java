@@ -1,18 +1,15 @@
-package mini.community.controller;
+package mini.community.Profile.controller;
 
 import lombok.RequiredArgsConstructor;
-import mini.community.dto.ExperienceDto;
-import mini.community.dto.ProfileDetailDto;
-import mini.community.dto.ProfileListDto;
+import mini.community.experience.dto.ExperienceDto;
+import mini.community.Profile.dto.ProfileDetailDto;
 import mini.community.dto.UpsertProfileDto;
 import mini.community.global.context.TokenContext;
 import mini.community.global.context.TokenContextHolder;
-import mini.community.service.ProfileService;
+import mini.community.Profile.service.ProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
