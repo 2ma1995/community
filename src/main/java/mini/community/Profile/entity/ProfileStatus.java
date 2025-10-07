@@ -1,4 +1,4 @@
-package mini.community.domain;
+package mini.community.Profile.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,18 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "skills")
+@Table(name = "profile_status")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Skill {
+public class ProfileStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name;
+    private String code;
 
-    @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProfileSkill> profileSkills = new ArrayList<>();
+    @Column(nullable = false)
+    private String label;
+
+    @OneToMany(mappedBy = "profileStatus")
+    private List<Profile> profiles = new ArrayList<>();
 }

@@ -1,4 +1,4 @@
-package mini.community.domain;
+package mini.community.Profile.entity;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

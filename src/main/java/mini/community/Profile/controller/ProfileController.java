@@ -1,9 +1,10 @@
 package mini.community.Profile.controller;
 
 import lombok.RequiredArgsConstructor;
+import mini.community.Profile.dto.UpsertProfileDto;
+import mini.community.education.dto.EducationDto;
 import mini.community.experience.dto.ExperienceDto;
 import mini.community.Profile.dto.ProfileDetailDto;
-import mini.community.dto.UpsertProfileDto;
 import mini.community.global.context.TokenContext;
 import mini.community.global.context.TokenContextHolder;
 import mini.community.Profile.service.ProfileService;
@@ -23,7 +24,7 @@ public class ProfileController {
     }
 
     @GetMapping("user/{userId}")
-    public ResponseEntity<?> getProfileById(@PathVariable(value = "userId") Long userId) {
+    public ResponseEntity<?> getProfileById(@PathVariable(value = "userId") final Long userId) {
         return ResponseEntity.ok(profileService.getProfileById(userId));
     }
 
@@ -43,12 +44,8 @@ public class ProfileController {
     public ResponseEntity<?> upsertProfile(@RequestBody UpsertProfileDto profileDto) {
         TokenContext context = TokenContextHolder.getContext();
         long userId = context.getUserId();
-        try{
             profileService.upsertProfile(userId, profileDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("Profile 생성/업데이트 완료");
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("프로필 생성/업데이트 실패" + e.getMessage());
-        }
     }
 
     @PutMapping("/experience")
@@ -61,6 +58,18 @@ public class ProfileController {
     @DeleteMapping("/experience/{experience_id}")
     public void deleteExperience(@PathVariable(value = "experience_id") Long experienceId) {
         profileService.deleteExperience(experienceId);
+    }
+
+    @PutMapping("/education")
+    public void addEducation(@RequestBody EducationDto educationDto) {
+        TokenContext context = TokenContextHolder.getContext();
+        long userId = context.getUserId();
+        profileService.addEducation(userId, educationDto);
+    }
+
+    @DeleteMapping("/education/{education_id}")
+    public void deleteEducation(@PathVariable(value = "education_id") Long educationId) {
+        profileService.deleteEducation(educationId);
     }
 
 }

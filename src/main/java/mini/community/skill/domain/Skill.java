@@ -1,30 +1,27 @@
-package mini.community.domain;
+package mini.community.skill.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mini.community.Profile.entity.Profile;
+import mini.community.Profile.entity.ProfileSkill;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "profile_status")
+@Table(name = "skills")
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProfileStatus {
+public class Skill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String code;
+    private String name;
 
-    @Column(nullable = false)
-    private String label;
-
-    @OneToMany(mappedBy = "profileStatus")
-    private List<Profile> profiles = new ArrayList<>();
+    @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProfileSkill> profileSkills = new ArrayList<>();
 }

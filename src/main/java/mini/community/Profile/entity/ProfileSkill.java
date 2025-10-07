@@ -1,10 +1,10 @@
-package mini.community.domain;
+package mini.community.Profile.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mini.community.Profile.entity.Profile;
+import mini.community.skill.domain.Skill;
 
 @Table(name = "profile_skills")
 @IdClass(ProfileSkillId.class)

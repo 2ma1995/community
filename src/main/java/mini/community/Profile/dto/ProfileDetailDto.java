@@ -1,11 +1,11 @@
 package mini.community.Profile.dto;
 
 import lombok.*;
+import mini.community.Profile.entity.Profile;
+import mini.community.Profile.entity.ProfileSkill;
 import mini.community.User.entity.User;
-import mini.community.domain.Skill;
-import mini.community.education.domain.Education;
+import mini.community.skill.domain.Skill;
 import mini.community.education.dto.GetEducationDto;
-import mini.community.experience.domain.Experience;
 import mini.community.experience.dto.GetExperienceDto;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class ProfileDetailDto {
     private String githubUsername;
     private String bio;
     private String image;
-    private List<String> skills;
+    private List<Skill> skills;
     private List<GetExperienceDto> experience;
     private List<GetEducationDto> education;
 
@@ -36,27 +36,26 @@ public class ProfileDetailDto {
         this.githubUsername = githubUsername;
         this.bio = bio;
         this.image = image;
-        this.skills = skills.stream().map(Skill::getName).collect(Collectors.toList());
+        this.skills = skills;
         this.experience = experience;
         this.education = education;
     }
 
-//    public static ProfileDetailDto fromEntity(Profile profile) {
-//        return ProfileDetailDto.builder()
-//                .id(profile.getId())
-//                .user(profile.getUser())
-//                .company(profile.getCompany())
-//                .website(profile.getWebsite())
-//                .location(profile.getLocation())
-//                .githubUsername(profile.getGithubUsername())
-//                .bio(profile.getBio())
-//                .image(profile.getImage())
-//                .skills(profile.getProfileSkills().stream()
-//                        .map(ps -> ps.getSkill().getName())
-//                        .collect(Collectors.toList()))
-//                .experience(profile.getExperiences().stream().map(GetExperienceDto::from).collect(Collectors.toList()))
-//                .educations(profile.getEducations().stream().map(GetEducationDto::fromEntity).collect(Collectors.toList()))
-//                .build();
-//    }
+    public static ProfileDetailDto fromEntity(Profile profile) {
+        return ProfileDetailDto.builder()
+                .user(profile.getUser())
+                .company(profile.getCompany())
+                .website(profile.getWebsite())
+                .location(profile.getLocation())
+                .bio(profile.getBio())
+                .image(profile.getImage())
+                .skills(profile.getProfileSkills().stream()
+                        .map(ProfileSkill::getSkill)
+                        .collect(Collectors.toList()))
+                .experience(profile.getExperiences().stream().map(GetExperienceDto::fromEntity).collect(Collectors.toList()))
+                .education(profile.getEducations().stream().map(GetEducationDto::fromEntity).collect(Collectors.toList()))
+                .githubUsername(profile.getGithubUsername())
+                .build();
+    }
 
 }

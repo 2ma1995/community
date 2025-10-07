@@ -1,4 +1,4 @@
-package mini.community.common;
+package mini.community.global.domain;
 
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;

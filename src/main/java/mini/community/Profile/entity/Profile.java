@@ -2,12 +2,13 @@ package mini.community.Profile.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import mini.community.Profile.dto.UpsertProfileDto;
 import mini.community.User.entity.User;
-import mini.community.common.BaseTimeEntity;
+import mini.community.global.domain.BaseTimeEntity;
 import mini.community.domain.*;
-import mini.community.dto.UpsertProfileDto;
 import mini.community.education.domain.Education;
 import mini.community.experience.domain.Experience;
+import mini.community.skill.domain.Skill;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,15 +61,14 @@ public class Profile extends BaseTimeEntity {
 
 
     public void changeSkills(List<Skill> skills) {
+        //기존 프로필 스킬 삭제
         this.profileSkills.clear();
 
         for (Skill skill : skills) {
             ProfileSkill profileSkill = new ProfileSkill();
-
-            profileSkill.setProfile(this);
-            profileSkill.setSkill(skill);
-
-            this.profileSkills.add(profileSkill);
+            profileSkill.setProfile(this); //프로필 설정
+            profileSkill.setSkill(skill); // 기술 설정
+            this.profileSkills.add(profileSkill); // 리스트에 추가
         }
     }
 

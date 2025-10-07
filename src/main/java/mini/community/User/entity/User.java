@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import mini.community.common.BaseTimeEntity;
+import mini.community.global.domain.BaseTimeEntity;
 
 @Getter
 @Entity
@@ -25,7 +25,8 @@ public class User extends BaseTimeEntity {
     private String password;
 
     @Builder
-    public User(String name, String email, String password) {
+    public User(Long id, String name, String email, String password) {
+        this.id = id;
         this.username = name;
         this.email = email;
         this.password = password;

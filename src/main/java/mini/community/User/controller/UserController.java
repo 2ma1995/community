@@ -1,13 +1,10 @@
-package mini.community.controller;
+package mini.community.User.controller;
 
 import lombok.RequiredArgsConstructor;
 import mini.community.dto.RegisterDto;
 import mini.community.dto.TokenResponseDto;
 import mini.community.User.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor

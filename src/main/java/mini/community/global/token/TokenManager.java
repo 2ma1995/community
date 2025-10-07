@@ -10,6 +10,7 @@ import mini.community.dto.TokenResponseDto;
 import mini.community.global.context.TokenContext;
 import mini.community.global.context.TokenContextHolder;
 import mini.community.global.exception.UserNameFromTokenException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -19,13 +20,14 @@ import java.util.Date;
 @Component
 @RequiredArgsConstructor
 public class TokenManager {
-//    @Value("${jwt.secret}")
+
+    @Value("${jwt.secret}")
     private String jwtSecret;
-//    @Value("${jwt.issuer}")
+    @Value("${jwt.issuer}")
     private String jwtIssuer;
 
     public final static Long LOCAL_ACCESS_TOKEN_TIME_OUT = 99999L * 60 * 60;
-    public final static Long ACESS_TOKEN_TIME_OUT = 1000L * 60 * 60;
+    public final static Long ACCESS_TOKEN_TIME_OUT = 1000L * 60 * 60;
 
     public TokenResponseDto generateToken(TokenDto tokenDto) {
         String token = newToken(tokenDto, LOCAL_ACCESS_TOKEN_TIME_OUT);

@@ -18,7 +18,7 @@ public class GetExperienceDto {
     private LocalDate from;
     private LocalDate to;
 
-    public static GetExperienceDto from(Experience experience) {
+    public static GetExperienceDto fromEntity(Experience experience) {
         return GetExperienceDto.builder()
                 .id(experience.getId())
                 .company(experience.getCompany())
