@@ -5,7 +5,6 @@ import lombok.*;
 import mini.community.Profile.dto.UpsertProfileDto;
 import mini.community.User.entity.User;
 import mini.community.global.domain.BaseTimeEntity;
-import mini.community.domain.*;
 import mini.community.education.domain.Education;
 import mini.community.experience.domain.Experience;
 import mini.community.skill.domain.Skill;
@@ -16,7 +15,6 @@ import java.util.List;
 @Entity
 @Table(name = "profiles")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -77,7 +75,7 @@ public class Profile extends BaseTimeEntity {
 
     public void addEducation(Education education) {
         this.educations.add(education);
-        if (education.getProfile() != null) {
+        if (education.getProfile() != this) {
             education.setProfile(this);
         }
     }
@@ -88,7 +86,7 @@ public class Profile extends BaseTimeEntity {
 
     public void addExperience(Experience experience) {
         this.experiences.add(experience);
-        if (experience.getProfile() != null) {
+        if (experience.getProfile() != this) {
             experience.setProfile(this);
         }
     }
@@ -111,7 +109,4 @@ public class Profile extends BaseTimeEntity {
         if (profileDto.getStatus() != null) {this.status = profileDto.getStatus();}
         if (profileDto.getGithubUsername() != null) {this.githubUsername = profileDto.getGithubUsername();}
     }
-
-
-
 }

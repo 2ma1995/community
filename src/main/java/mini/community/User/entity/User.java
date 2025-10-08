@@ -24,12 +24,20 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private boolean deleted =  false;
+
     @Builder
     public User(Long id, String name, String email, String password) {
         this.id = id;
         this.username = name;
         this.email = email;
         this.password = password;
+        this.deleted = false;
+    }
+
+    public void softDelete() {
+        this.deleted = true;
     }
 
 }

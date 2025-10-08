@@ -1,6 +1,5 @@
 package mini.community.education.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import mini.community.education.domain.Education;
@@ -8,7 +7,6 @@ import mini.community.education.domain.Education;
 import java.time.LocalDate;
 
 @Getter
-@AllArgsConstructor
 @Builder
 public class GetEducationDto {
     private Long id;
@@ -17,6 +15,15 @@ public class GetEducationDto {
     private String major;
     private LocalDate from;
     private LocalDate to;
+
+    public GetEducationDto(Long id, String school, Integer degree, String major, LocalDate from, LocalDate to) {
+        this.id = id;
+        this.school = school;
+        this.degree = degree;
+        this.major = major;
+        this.from = from;
+        this.to = to;
+    }
 
     public static GetEducationDto fromEntity(Education education) {
         return GetEducationDto.builder()

@@ -11,6 +11,7 @@ import mini.community.Profile.service.ProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.getProfiles());
     }
 
-    @GetMapping("user/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<?> getProfileById(@PathVariable(value = "userId") final Long userId) {
         return ResponseEntity.ok(profileService.getProfileById(userId));
     }
@@ -70,6 +71,11 @@ public class ProfileController {
     @DeleteMapping("/education/{education_id}")
     public void deleteEducation(@PathVariable(value = "education_id") Long educationId) {
         profileService.deleteEducation(educationId);
+    }
+
+    @PostMapping("/image")
+    public void saveProfileImage(@ModelAttribute(name = "file") MultipartFile file) {
+
     }
 
 }

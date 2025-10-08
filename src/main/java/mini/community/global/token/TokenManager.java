@@ -9,7 +9,7 @@ import mini.community.dto.TokenDto;
 import mini.community.dto.TokenResponseDto;
 import mini.community.global.context.TokenContext;
 import mini.community.global.context.TokenContextHolder;
-import mini.community.global.exception.UserNameFromTokenException;
+import mini.community.global.exception.UsernameFromTokenException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -45,7 +45,7 @@ public class TokenManager {
 
     public void validateToken(String token) {
         if (ObjectUtils.isEmpty(token)) {
-            throw new UserNameFromTokenException("JWT Empty. Please check header");
+            throw new UsernameFromTokenException("JWT Empty. Please check header");
         }
         JWTVerifier verifier = JWT.require(Algorithm.HMAC512(jwtSecret)).withIssuer(jwtIssuer).build();
         DecodedJWT jwt = verifier.verify(token);

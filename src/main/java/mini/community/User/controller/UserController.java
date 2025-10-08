@@ -1,9 +1,10 @@
 package mini.community.User.controller;
 
 import lombok.RequiredArgsConstructor;
-import mini.community.dto.RegisterDto;
+import mini.community.User.dto.RegisterDto;
 import mini.community.dto.TokenResponseDto;
 import mini.community.User.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,6 +16,12 @@ public class UserController {
     @PostMapping
     public TokenResponseDto register(@RequestBody RegisterDto registerDto) {
         return userService.register(registerDto);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.ok("유저 계정이 삭제되었습니다.");
     }
 
 }

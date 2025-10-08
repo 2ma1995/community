@@ -1,9 +1,11 @@
 package mini.community.Profile.service;
 
 import lombok.RequiredArgsConstructor;
+import mini.community.Profile.dto.SocialLinkDto;
 import mini.community.Profile.dto.UpsertProfileDto;
 import mini.community.Profile.entity.Profile;
 import mini.community.Profile.entity.ProfileSkill;
+import mini.community.Profile.entity.SocialLink;
 import mini.community.User.entity.User;
 import mini.community.skill.domain.Skill;
 import mini.community.education.dto.GetEducationDto;
@@ -78,24 +80,47 @@ public class ProfileService {
         Profile profile = profileRepository.findByUser(user).orElseThrow(() -> new BadRequestException("Profile not found"));
         profile.addEducation(educationDto.toEntity());
     }
+
     @Transactional
     public void deleteEducation(Long educationId) {
         educationRepository.deleteById(educationId);
     }
 
+    private void addSocialLinks(Profile profile, List<SocialLinkDto> socialLinkDtos) {
+        if (socialLinkDtos == null || socialLinkDtos.isEmpty()) {
+            return;
+        }
+        for (SocialLinkDto dto : socialLinkDtos) {
+            SocialLink link = new SocialLink();
+            link.setProfile(profile);
+            link.setTwitter(dto.getTwitter());
+            link.setFacebook(dto.getFacebook());
+            link.setYoutube(dto.getYoutube());
+            link.setLinkedin(dto.getLinkedin());
+
+            profile.getSocialLinks().add(link);
+        }
+    }
+
     @Transactional
     public void upsertProfile(long userId, UpsertProfileDto profileDto) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new BadRequestException("유저가 존재하지 않습니다."));
+
         Optional<Profile> optionalProfile = profileRepository.findByUser(user);
+        List<Skill> skills = skillRepository.findByNameIn(profileDto.getSkills());
+
         if (optionalProfile.isPresent()) {
             Profile profile = optionalProfile.get();
             // 프로필 업데이트
             profile.update(profileDto);
-
             // 스킬 추가/수정
-            List<Skill> skills = skillRepository.findByNameIn(profileDto.getSkills());
             profile.changeSkills(skills);
-        } else{
+
+            // 소셜링크 제거후 추가
+            profile.getSocialLinks().clear();
+            addSocialLinks(profile, profileDto.getSocialLinks());
+
+        } else {
             //새 프로필 생성
             Profile profile = Profile.builder()
                     .user(user)
@@ -107,12 +132,9 @@ public class ProfileService {
                     .image(profileDto.getImage())
                     .githubUsername(profileDto.getGithubUsername())
                     .build();
-            profileRepository.save(profile);
-
-            //스킬추가
-            List<Skill> skills = skillRepository.findByNameIn(profileDto.getSkills());
             profile.changeSkills(skills);
+            addSocialLinks(profile, profileDto.getSocialLinks());
+            profileRepository.save(profile);
         }
     }
-
 }

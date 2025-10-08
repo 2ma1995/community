@@ -12,8 +12,9 @@ public class UpsertProfileDto {
     private String company;
     private String website;
     private String location;
-    private String bio;
     private String image;
-    private String githubUsername;
     private List<String> skills;
+    private String githubUsername;
+    private String bio;
+    private List<SocialLinkDto> socialLinks;
 }

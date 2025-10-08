@@ -22,12 +22,13 @@ public class Experience {
     @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
 
-    @Column(nullable = false)
-    private String company;
-
     @Column(name = "job_title", nullable = false)
     private String jobTitle;
 
+    @Column(name = "company")
+    private String company;
+
+    @Column(name = "position")
     private String position;
 
     @Column(name = "start_date", nullable = false)
@@ -36,6 +37,16 @@ public class Experience {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "description")
     private String description;
+
+    public void setProfile(Profile profile) {
+        if (this.profile != null) {
+            this.profile.getExperiences().remove(this);
+        }
+        this.profile = profile;
+        if (!profile.getExperiences().contains(this)) {
+            profile.getExperiences().add(this);
+        }
+    }
 }
