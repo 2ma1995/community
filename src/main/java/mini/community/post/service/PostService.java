@@ -66,7 +66,6 @@ public class PostService {
         if (alreadyLike) {
             throw new BadRequestException("이미 좋아요를 누른 게시물입니다.");
         }
-        //todo 유저아이디 확인해야함.
         post.addLike(Like.builder()
                 .user(userRepository.findById(userId).get())
                 .build());
