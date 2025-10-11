@@ -3,7 +3,7 @@ package mini.community.Profile.dto;
 import lombok.*;
 import mini.community.Profile.entity.Profile;
 import mini.community.Profile.entity.ProfileSkill;
-import mini.community.User.entity.User;
+import mini.community.User.domain.User;
 import mini.community.skill.domain.Skill;
 import mini.community.education.dto.GetEducationDto;
 import mini.community.experience.dto.GetExperienceDto;

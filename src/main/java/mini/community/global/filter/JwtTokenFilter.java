@@ -5,9 +5,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import mini.community.global.token.TokenManager;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -22,7 +22,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final TokenManager tokenManager;
     private final static String AUTHORIZATION_HEADER = "x-auth-token";
 
-    @Value("${except-uri}") //?
+    @Value("${except-uri}")
     private String exceptURI;
 
     @Override

@@ -1,6 +1,6 @@
 package mini.community.User.repository;
 
-import mini.community.User.entity.User;
+import mini.community.User.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;

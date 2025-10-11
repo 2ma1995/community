@@ -6,7 +6,7 @@ import mini.community.Profile.dto.UpsertProfileDto;
 import mini.community.Profile.entity.Profile;
 import mini.community.Profile.entity.ProfileSkill;
 import mini.community.Profile.entity.SocialLink;
-import mini.community.User.entity.User;
+import mini.community.User.domain.User;
 import mini.community.skill.domain.Skill;
 import mini.community.education.dto.GetEducationDto;
 import mini.community.experience.dto.ExperienceDto;

@@ -3,7 +3,7 @@ package mini.community.Profile.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import mini.community.Profile.dto.UpsertProfileDto;
-import mini.community.User.entity.User;
+import mini.community.User.domain.User;
 import mini.community.global.domain.BaseTimeEntity;
 import mini.community.education.domain.Education;
 import mini.community.experience.domain.Experience;

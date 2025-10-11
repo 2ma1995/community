@@ -22,3 +22,5 @@ spring:
 jwt:
   secret: secrtetsecrtetsecrtetsecrtetsecrtetsecrtetsecrtetsecrtetsecrtet
   issuer: connector
+
+except-uri: /api/public/**,/api/health

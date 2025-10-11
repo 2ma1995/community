@@ -2,6 +2,7 @@ package mini.community.Profile.controller;
 
 import lombok.RequiredArgsConstructor;
 import mini.community.Profile.dto.UpsertProfileDto;
+import mini.community.Profile.service.ImageService;
 import mini.community.education.dto.EducationDto;
 import mini.community.experience.dto.ExperienceDto;
 import mini.community.Profile.dto.ProfileDetailDto;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/profiles")
 public class ProfileController {
     private final ProfileService profileService;
+    private final ImageService imageService;
 
     @GetMapping
     public ResponseEntity<?> getAllProfiles() {
@@ -75,7 +77,7 @@ public class ProfileController {
 
     @PostMapping("/image")
     public void saveProfileImage(@ModelAttribute(name = "file") MultipartFile file) {
-
+        imageService.saveImage(file);
     }
 
 }

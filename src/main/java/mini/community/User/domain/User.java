@@ -1,9 +1,10 @@
-package mini.community.User.entity;
+package mini.community.User.domain;
 
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import mini.community.Profile.entity.Profile;
 import mini.community.global.domain.BaseTimeEntity;
 
 @Getter
@@ -25,7 +26,10 @@ public class User extends BaseTimeEntity {
     private String password;
 
     @Column(nullable = false)
-    private boolean deleted =  false;
+    private boolean deleted = false;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Profile profile;
 
     @Builder
     public User(Long id, String name, String email, String password) {

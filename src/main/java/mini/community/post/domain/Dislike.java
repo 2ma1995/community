@@ -1,21 +1,21 @@
-package mini.community.domain;
+package mini.community.post.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import mini.community.User.entity.User;
+import lombok.*;
+import mini.community.User.domain.User;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "likes", uniqueConstraints = {
+@Table(name = "dislikes", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"post_id", "user_id"})
 })
 @Getter
 @Setter
 @NoArgsConstructor
-public class Like {
+@AllArgsConstructor
+@Builder
+public class Dislike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,5 +34,15 @@ public class Like {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+    }
+
+    public void setPost(Post post) {
+        if (this.post != null) {
+            this.post.getDislikes().remove(this);
+        }
+        this.post = post;
+        if (!post.getDislikes().contains(this)) {
+            post.getDislikes().add(this);
+        }
     }
 }

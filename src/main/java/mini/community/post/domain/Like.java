@@ -1,21 +1,21 @@
-package mini.community.domain;
-
+package mini.community.post.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import mini.community.User.entity.User;
+import lombok.*;
+import mini.community.User.domain.User;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "likes", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"post_id", "user_id"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
-public class Comment {
-
+@AllArgsConstructor
+@Builder
+public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,24 +28,21 @@ public class Comment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String contents;
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        updatedAt = createdAt;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    public void setPost(Post post) {
+        if (this.post != null) {
+            this.post.getLikes().remove(this);
+        }
+        this.post = post;
+        if (!post.getLikes().contains(this)) {
+            post.getLikes().add(this);
+        }
     }
-
 }

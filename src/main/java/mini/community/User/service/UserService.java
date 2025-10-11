@@ -3,7 +3,7 @@ package mini.community.User.service;
 import lombok.RequiredArgsConstructor;
 import mini.community.User.dto.RegisterDto;
 import mini.community.User.dto.UserDto;
-import mini.community.User.entity.User;
+import mini.community.User.domain.User;
 import mini.community.dto.*;
 import mini.community.global.exception.BadRequestException;
 import mini.community.global.token.TokenManager;
@@ -51,9 +51,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserDto getAuth(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new BadRequestException("user not found")
-        );
+        User user = userRepository.findById(userId).orElseThrow(() -> new BadRequestException("user not found"));
         return UserDto.builder()
                 .id(user.getId())
                 .name(user.getUsername())

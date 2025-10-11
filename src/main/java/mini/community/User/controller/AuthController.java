@@ -1,4 +1,4 @@
-package mini.community.controller;
+package mini.community.User.controller;
 
 import lombok.RequiredArgsConstructor;
 import mini.community.User.dto.UserDto;
