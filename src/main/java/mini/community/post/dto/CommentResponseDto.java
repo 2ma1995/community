@@ -21,7 +21,7 @@ public class CommentResponseDto {
         return CommentResponseDto.builder()
                 .id(comment.getId())
                 .content(comment.getContents())
-                .name(comment.getUser().getUsername())
+                .name(comment.getUser().getName())
                 .avatar(profile!=null?profile.getImage():null)
                 .userId(comment.getUser().getId())
                 .build();

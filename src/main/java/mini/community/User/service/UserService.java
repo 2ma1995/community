@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final TokenManager tokenManager;
     private final BCryptPasswordEncoder passwordEncoder;
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
 
     private TokenResponseDto toTokenResponseDto(User user) {
@@ -31,14 +31,17 @@ public class UserService {
         if (userRepository.existsByEmailAndDeletedFalse(registerDto.getEmail())) {
             throw new BadRequestException("이미 존재하는 이메일 입니다.");
         }
+        // 비밀번호 일치 확인
         if (!registerDto.getPassword().equals(registerDto.getCheckPassword())) {
             throw new BadRequestException("비밀번호가 일치하지 않습니다.");
         }
-        User user = userRepository.save(User.builder()
-                .name(registerDto.getName())
-                .email(registerDto.getEmail())
-                .password(passwordEncoder.encode(registerDto.getPassword()))
-                .build());
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(registerDto.getPassword());
+        // DTO -> Entity
+        User user = registerDto.toEntity(encodedPassword);
+        // 저장
+        userRepository.save(user);
+        //토큰 응답
         return toTokenResponseDto(user);
     }
 
@@ -47,16 +50,14 @@ public class UserService {
     public void deleteUser(Long userId) {
         User user = userRepository.findByIdAndDeletedFalse(userId).orElseThrow(() -> new BadRequestException("존재하지 않거나 이미 삭제된 유저입니다."));
         user.softDelete();
+        userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
     public UserDto getAuth(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new BadRequestException("user not found"));
-        return UserDto.builder()
-                .id(user.getId())
-                .name(user.getUsername())
-                .email(user.getEmail())
-                .build();
+        // entity -> dto
+        return UserDto.fromEntity(user);
     }
 
     @Transactional(readOnly = true)

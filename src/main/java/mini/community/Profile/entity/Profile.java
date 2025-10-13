@@ -54,8 +54,8 @@ public class Profile extends BaseTimeEntity {
     @Column(name = "image")
     private String image;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    private List<Skill> skills = new ArrayList<>();
+//    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+//    private List<Skill> skills = new ArrayList<>();
 
 
     public void changeSkills(List<Skill> skills) {

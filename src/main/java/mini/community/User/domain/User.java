@@ -10,14 +10,14 @@ import mini.community.global.domain.BaseTimeEntity;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "User")
+@Table(name = "users")
 public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String username;
+    private String name;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -34,7 +34,7 @@ public class User extends BaseTimeEntity {
     @Builder
     public User(Long id, String name, String email, String password) {
         this.id = id;
-        this.username = name;
+        this.name = name;
         this.email = email;
         this.password = password;
         this.deleted = false;

@@ -1,5 +1,6 @@
 package mini.community.Profile.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mini.community.Profile.entity.Profile;
 import mini.community.Profile.entity.ProfileSkill;
@@ -16,15 +17,25 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ProfileDetailDto {
     private Long id;
+    @Schema(description = "유저 정보")
     private User user;
+    @Schema(description = "회사명",example = "SK Hynix")
     private String company;
+    @Schema(description = "웹사이트",example = "https://www.hynix.com")
     private String website;
+    @Schema(description = "사는 곳",example = "Bucheon")
     private String location;
+    @Schema(description = "깃허브 아이디",example = "hong123")
     private String githubUsername;
+    @Schema(description = "자기소개", example = "안녕하세요")
     private String bio;
+    @Schema(description = "유저 사진",example = "https://example.com/image.jpg")
     private String image;
+    @Schema(description = "기술 스택")
     private List<Skill> skills;
+    @Schema(description = "경력")
     private List<GetExperienceDto> experience;
+    @Schema(description = "학력")
     private List<GetEducationDto> education;
 
     @Builder

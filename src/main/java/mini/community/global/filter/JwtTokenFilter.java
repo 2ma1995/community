@@ -53,6 +53,24 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         if ("/api/auth".equals(path) && "POST".equalsIgnoreCase(method)) return true;
         if ("/api/users".equals(path) && "POST".equalsIgnoreCase(method)) return true;
 
-        return Arrays.stream(exceptURI.split(",")).anyMatch(pattern -> matcher.match(pattern, path));
+        // Swagger UI 경로
+        if (matcher.match("/swagger-ui/**", path)) return true;
+        if (matcher.match("/v3/api-docs/**", path)) {
+            log.info("✅ Swagger API docs 경로 필터 제외: {}", path);
+            return true;
+        }
+        if (matcher.match("/swagger-ui.html", path)) return true;
+        if (matcher.match("/swagger-resources/**", path)) return true;
+        if (matcher.match("/webjars/**", path)) return true;
+
+        boolean shouldNotFilter = Arrays.stream(exceptURI.split(","))
+                .anyMatch(pattern -> matcher.match(pattern, path));
+
+        if (!shouldNotFilter) {
+            log.debug("JWT 필터 적용 경로: {} [{}]", path, method);
+        }
+
+        return shouldNotFilter;
     }
+
 }

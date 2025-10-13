@@ -25,7 +25,7 @@ public class PostDetailResponseDto {
         return PostDetailResponseDto.builder()
                 .id(model.getPost().getId())
                 .text(model.getPost().getContents())
-                .name(model.getUser().getUsername())
+                .name(model.getUser().getName())
                 .avatar(model.getProfile().getImage())
                 .userId(model.getUser().getId())
                 .comments(model.getPost().getComments().stream()

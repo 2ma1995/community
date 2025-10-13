@@ -26,7 +26,7 @@ public class PostResponseDto {
         return PostResponseDto.builder()
                 .id(model.getPost().getId())
                 .contents(model.getPost().getContents())
-                .name(model.getUser().getUsername())
+                .name(model.getUser().getName())
                 .avatar(model.getProfile().getImage())
                 .userId(model.getUser().getId())
                 .likeCount(model.getPost().getLikes().size())

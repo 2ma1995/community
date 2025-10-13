@@ -18,7 +18,7 @@ public class ProfileListDto {
     public static ProfileListDto fromEntity(Profile profile) {
         return ProfileListDto.builder()
                 .id(profile.getId())
-                .username(profile.getUser().getUsername())
+                .username(profile.getUser().getName())
                 .bio(profile.getBio())
                 .skills(profile.getProfileSkills().stream().map(ps->ps.getSkill().getName()).toList()).build();
     }

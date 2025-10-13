@@ -60,8 +60,8 @@ public class PostService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new BadRequestException("Not Post"));
         boolean alreadyLike = post.getLikes()
                 .stream()
-                .map(Like::getId)
-                .anyMatch(uid -> uid == userId);
+                .map(like -> like.getUser().getId())
+                .anyMatch(uid -> uid.equals(userId));
 
         if (alreadyLike) {
             throw new BadRequestException("이미 좋아요를 누른 게시물입니다.");
@@ -74,7 +74,7 @@ public class PostService {
     @Transactional
     public void unlikePost(Long userId, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new BadRequestException("Not Post"));
-        boolean alreadyDisLike = post.getDislikes().stream().map(Dislike::getId).anyMatch(uid -> uid == userId);
+        boolean alreadyDisLike = post.getDislikes().stream().map(dislike -> dislike.getUser().getId()).anyMatch(uid -> uid.equals(userId));
         if (alreadyDisLike) {
             throw new BadRequestException("이미 싫어요를 누른 게시물입니다.");
         }
@@ -86,7 +86,7 @@ public class PostService {
     @Transactional
     public void cancelLikePost(Long userId, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new BadRequestException("Not Post"));
-        Map<Long, Like> likes = post.getLikes().stream().collect(Collectors.toMap(Like::getId, Function.identity()));
+        Map<Long, Like> likes = post.getLikes().stream().collect(Collectors.toMap(like -> like.getUser().getId(), Function.identity()));
         if (!likes.containsKey(userId)) {
             throw new BadRequestException("좋아요 취소는 좋아요를 누른 게시물만 가능합니다.");
         }
@@ -96,7 +96,7 @@ public class PostService {
     @Transactional
     public void cancelUnlikePost(Long userId, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new BadRequestException("Not Post"));
-        Map<Long, Dislike> dislikes = post.getDislikes().stream().collect(Collectors.toMap(Dislike::getId, Function.identity()));
+        Map<Long, Dislike> dislikes = post.getDislikes().stream().collect(Collectors.toMap(dislike -> dislike.getUser().getId(), Function.identity()));
         if (!dislikes.containsKey(userId)) {
             throw new BadRequestException("싫어요 취소는 싫어요를 누른 게시물만 가능합니다.");
         }
