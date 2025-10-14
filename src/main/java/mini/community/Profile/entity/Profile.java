@@ -61,16 +61,19 @@ public class Profile extends BaseTimeEntity {
     public void changeSkills(List<Skill> skills) {
         //기존 프로필 스킬 삭제
         this.profileSkills.clear();
-
         for (Skill skill : skills) {
-            ProfileSkill profileSkill = new ProfileSkill();
-            profileSkill.setProfile(this); //프로필 설정
-            profileSkill.setSkill(skill); // 기술 설정
-            this.profileSkills.add(profileSkill); // 리스트에 추가
+            addProfileSkill(skill);
         }
+    }
+    private void addProfileSkill(Skill skill) {
+        ProfileSkill ps = new ProfileSkill();
+        ps.setProfile(this); //프로필 설정
+        ps.setSkill(skill); // 기술 설정
+        this.profileSkills.add(ps); // 리스트에 추가
     }
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default // lombok의 @Builder는 필드 초기값을 무시해서 붙여야함
     private List<Education> educations = new ArrayList<>();
 
     public void addEducation(Education education) {
@@ -82,6 +85,7 @@ public class Profile extends BaseTimeEntity {
 
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Experience> experiences = new ArrayList<>();
 
     public void addExperience(Experience experience) {
@@ -92,9 +96,11 @@ public class Profile extends BaseTimeEntity {
     }
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<SocialLink> socialLinks = new ArrayList<>();
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<ProfileSkill> profileSkills = new ArrayList<>();
 
     public void update(UpsertProfileDto profileDto) {

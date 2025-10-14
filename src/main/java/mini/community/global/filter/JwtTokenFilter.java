@@ -30,8 +30,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         // 토큰 조회
         String accessToken = this.resolveToken(request);
 
+        if (accessToken != null && !accessToken.isEmpty()) {
+            try{
+                tokenManager.validateToken(accessToken);
+            }catch (Exception e){
+                log.error("토큰 검증 실퍠: {}", e.getMessage());
+            }
+        }else {
+            log.debug("토큰 없음 - permitAll() 경로로 처리. URI: {}",request.getRequestURI());
+        }
         // 토큰 벨리데이션
-        tokenManager.validateToken(accessToken);
         filterChain.doFilter(request, response);
     }
 
