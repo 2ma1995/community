@@ -9,6 +9,8 @@ import mini.community.post.repository.model.GetPostRequestModel;
 import mini.community.post.repository.model.GetPostResponseModel;
 
 import java.util.List;
+
+import static mini.community.Profile.entity.QProfile.profile;
 import static mini.community.User.domain.QUser.user;
 import static mini.community.post.domain.QPost.post;
 
@@ -32,9 +34,16 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
     private JPAQuery<GetPostResponseModel> getPostByModel(GetPostRequestModel model) {
         return queryFactory
-                .select(Projections.fields(GetPostResponseModel.class, post, user))
+                .select(Projections.constructor(
+                        GetPostResponseModel.class,
+                        post,
+                        user,
+                        profile
+                ))
+
                 .from(post)
                 .join(user).on(post.user.id.eq(user.id))
+                .leftJoin(profile).on(profile.user.eq(user))
                 .where(eqPostId(model.getPostId()));
     }
 

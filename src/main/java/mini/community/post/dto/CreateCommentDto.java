@@ -6,12 +6,12 @@ import mini.community.post.domain.Comment;
 
 @Getter
 public class CreateCommentDto {
-    private String text;
+    private String contents;
 
     public Comment toEntity(User writer) {
         return Comment.builder()
                 .user(writer)
-                .contents(text)
+                .contents(contents)
                 .build();
     }
 }

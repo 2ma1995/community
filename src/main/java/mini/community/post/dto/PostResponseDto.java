@@ -22,12 +22,12 @@ public class PostResponseDto {
     private Integer commentCount;
     private LocalDateTime createdAt;
 
-    public static PostResponseDto of(GetPostResponseModel model){
+    public static PostResponseDto of(GetPostResponseModel model) {
         return PostResponseDto.builder()
                 .id(model.getPost().getId())
                 .contents(model.getPost().getContents())
                 .name(model.getUser().getName())
-                .avatar(model.getProfile().getImage())
+                .avatar(model.getProfile() != null ? model.getProfile().getImage() : null)
                 .userId(model.getUser().getId())
                 .likeCount(model.getPost().getLikes().size())
                 .disLikeCount(model.getPost().getDislikes().size())

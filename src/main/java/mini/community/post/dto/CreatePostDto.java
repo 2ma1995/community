@@ -8,12 +8,12 @@ import java.util.ArrayList;
 
 @Getter
 public class CreatePostDto {
-    private String text;
+    private String contents;
 
     public Post toEntity(User user) {
         return Post.builder()
                 .user(user)
-                .contents(text)
+                .contents(contents)
                 .likes(new ArrayList<>())
                 .dislikes(new ArrayList<>())
                 .comments(new ArrayList<>())
