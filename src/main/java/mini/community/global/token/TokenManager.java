@@ -80,4 +80,21 @@ public class TokenManager {
         return jwt.getClaim("user_id").asLong();
     }
 
+    public long getTokenRemainingSeconds(String token) {
+        try{
+            DecodedJWT jwt = JWT.require(Algorithm.HMAC512(jwtSecret))
+                    .withIssuer(jwtIssuer)
+                    .build()
+                    .verify(token);
+
+            long expMillis = jwt.getExpiresAt().getTime(); // 만료시각(ms)
+            long nowMillis = System.currentTimeMillis();
+
+            long remaining = (expMillis - nowMillis) / 1000; // 초 단위 변환
+            return Math.max(0, remaining); // 음수 방지
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
 }

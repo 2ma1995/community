@@ -16,6 +16,7 @@ import mini.community.dto.TokenDto;
 import mini.community.dto.TokenResponseDto;
 import mini.community.global.context.TokenContext;
 import mini.community.global.context.TokenContextHolder;
+import mini.community.global.token.TokenBlacklistService;
 import mini.community.global.token.TokenManager;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +27,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final UserService userService;
     private final TokenManager tokenManager;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    @GetMapping
     @Operation(
             summary = "현재 로그인한 사용자 정보 조회",
             description = "JWT 토큰으로 현재 로그인한 사용자의 정보를 조회합니다.",
@@ -67,6 +68,7 @@ public class AuthController {
                     )
             )
     })
+    @GetMapping
     public UserDto getAuth(){
         TokenContext context = TokenContextHolder.getContext();
         long userId = context.getUserId();
@@ -126,7 +128,6 @@ public class AuthController {
                     )
             )
     })
-
     @PostMapping("/login")
     public TokenResponseDto login(@RequestBody LoginDto loginDto){
         return userService.login(loginDto);
@@ -139,6 +140,21 @@ public class AuthController {
         tokenManager.validateToken(req.getRefreshToken(), "refresh");
         Long userId = tokenManager.extractUserId(req.getRefreshToken());
         // 2) userId로 새 토큰 발급
-        return tokenManager.generateToken(TokenDto.builder().userId(userId).build());
+        return userService.reissueToken(userId, req.getRefreshToken());
+    }
+
+    @PostMapping("/logout")
+    public String logout(@RequestHeader("x-auth-token") String token) {
+        // Access Token 남은 만료 시간 계산
+        long expireSeconds = tokenManager.getTokenRemainingSeconds(token);
+
+        // 블랙리스트에 등록 (남은 유효시간만큼 TTL 유지)
+        tokenBlacklistService.blacklistToken(token, expireSeconds);
+
+        // Refresh & Session 삭제 (Redis)
+        TokenContext context = TokenContextHolder.getContext();
+        userService.logout(context.getUserId());
+
+        return "로그아웃 되었습니다.";
     }
 }

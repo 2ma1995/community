@@ -23,14 +23,21 @@ public class PostResponseDto {
     private LocalDateTime createdAt;
 
     public static PostResponseDto of(GetPostResponseModel model) {
+        return of(model,model.getPost().getLikes().size(),
+                model.getPost().getDislikes().size(),
+                model.getPost().getComments().size());
+    }
+
+    public static PostResponseDto of(GetPostResponseModel model, int likeCount, int disLikeCount, int commentCount) {
         return PostResponseDto.builder()
                 .id(model.getPost().getId())
                 .contents(model.getPost().getContents())
                 .name(model.getUser().getName())
                 .avatar(model.getProfile() != null ? model.getProfile().getImage() : null)
                 .userId(model.getUser().getId())
-                .likeCount(model.getPost().getLikes().size())
-                .disLikeCount(model.getPost().getDislikes().size())
+                .likeCount(likeCount)
+                .disLikeCount(disLikeCount)
+                .commentCount(commentCount)
                 .createdAt(model.getPost().getCreatedAt())
                 .build();
     }

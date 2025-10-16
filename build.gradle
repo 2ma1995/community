@@ -53,10 +53,13 @@ dependencies {
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    //swagger
+
     // Swagger (Spring Boot 3.x 호환 버전)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'io.lettuce:lettuce-core'
 }
 
 // ✅ QueryDSL Q타입 생성 위치

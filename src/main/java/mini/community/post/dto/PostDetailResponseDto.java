@@ -21,12 +21,12 @@ public class PostDetailResponseDto {
     private List<CommentResponseDto> comments;
     private LocalDateTime createdAt;
 
-    public static PostDetailResponseDto of(GetPostResponseModel model) {
+    public static PostDetailResponseDto of(GetPostResponseModel model, int likeCount, int disLikeCount, int commentCount) {
         return PostDetailResponseDto.builder()
                 .id(model.getPost().getId())
                 .text(model.getPost().getContents())
                 .name(model.getUser().getName())
-                .avatar(model.getProfile().getImage())
+                .avatar(model.getProfile() != null ? model.getProfile().getImage() : null)
                 .userId(model.getUser().getId())
                 .comments(model.getPost().getComments().stream()
                         .map(CommentResponseDto::of)
