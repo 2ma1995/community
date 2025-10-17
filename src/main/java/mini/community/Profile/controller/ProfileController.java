@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -17,6 +16,7 @@ import mini.community.Profile.service.ImageService;
 import mini.community.education.dto.EducationDto;
 import mini.community.experience.dto.ExperienceDto;
 import mini.community.Profile.dto.ProfileDetailDto;
+import mini.community.global.Service.S3Service;
 import mini.community.global.context.TokenContext;
 import mini.community.global.context.TokenContextHolder;
 import mini.community.Profile.service.ProfileService;
@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileController {
     private final ProfileService profileService;
     private final ImageService imageService;
+    private final S3Service s3Service;
 
     @Operation(summary = "모든 프로필 조회", description = "등록된 모든 유저의 프로필 목록 조회")
     @ApiResponses({
@@ -89,17 +90,17 @@ public class ProfileController {
                     examples = @ExampleObject(name = "예시",
                             value = """
                                     {
-                                      "status": "Junior Developer",
-                                      "company": "SK Hynix",
-                                      "website": "https://www.hynix.com",
-                                      "location": "Bucheon",
-                                      "bio": "백엔드를 공부하고 있어요",
-                                      "image": "https://example.com/image.jpg",
-                                      "githubUsername": "hong123",
-                                      "skills": ["Java","Spring","JPA"],
-                                      "socialLinks": [
-                                        {"twitter":"@hong","facebook":"hong.fb","youtube":"hong-yt","linkedin":"hong-li"}
-                                      ]
+                                    "status": "Junior Developer",
+                                    "company": "SK Hynix",
+                                    "website": "https://www.hynix.com",
+                                    "location": "Bucheon",
+                                    "bio": "백엔드를 공부하고 있어요",
+                                    "image": "https://example.com/image.jpg",
+                                    "githubUsername": "hong123",
+                                    "skills": ["Java","Spring","JPA"],
+                                    "socialLinks": [
+                                    {"twitter":"@hong","facebook":"hong.fb","youtube":"hong-yt","linkedin":"hong-li"}
+                                    ]
                                     }
                                     """))
     )
@@ -127,12 +128,12 @@ public class ProfileController {
                     schema = @Schema(implementation = ExperienceDto.class),
                     examples = @ExampleObject(value = """
                             {
-                              "title": "Backend Developer",
-                              "company": "ABC",
-                              "fromDate": "2023-01-01",
-                              "toDate": "2024-03-31",
-                              "current": false,
-                              "description": "Spring/JPA 기반 API 개발"
+                            "title": "Backend Developer",
+                            "company": "ABC",
+                            "fromDate": "2023-01-01",
+                            "toDate": "2024-03-31",
+                            "current": false,
+                            "description": "Spring/JPA 기반 API 개발"
                             }
                             """))
     )
@@ -173,13 +174,13 @@ public class ProfileController {
                     schema = @Schema(implementation = EducationDto.class),
                     examples = @ExampleObject(value = """
                             {
-                              "school": "SNU",
-                              "degree": "B.S.",
-                              "fieldOfStudy": "Computer Science",
-                              "fromDate": "2018-03-01",
-                              "toDate": "2022-02-28",
-                              "current": false,
-                              "description": "자료구조/알고리즘 전공"
+                            "school": "SNU",
+                            "degree": "B.S.",
+                            "fieldOfStudy": "Computer Science",
+                            "fromDate": "2018-03-01",
+                            "toDate": "2022-02-28",
+                            "current": false,
+                            "description": "자료구조/알고리즘 전공"
                             }
                             """))
     )
@@ -219,11 +220,14 @@ public class ProfileController {
             @ApiResponse(responseCode = "400", description = "파일 오류"),
             @ApiResponse(responseCode = "401", description = "인증 실패")
     })
-    @PostMapping(value = "/image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void saveProfileImage(
+    @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadProfileImage(
             @Parameter(description = "업로드할 이미지 파일", required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE, schema = @Schema(type = "string", format = "binary")))
-            @RequestPart("file") MultipartFile file) {
-        imageService.saveImage(file);
+            @RequestPart("file") MultipartFile file
+    ) {
+        long userId = TokenContextHolder.getContext().getUserId();
+        String url = imageService.saveImage(userId, file);
+        return ResponseEntity.ok("url" + url);
     }
 
 }

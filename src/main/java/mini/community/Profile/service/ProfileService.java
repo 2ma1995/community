@@ -47,7 +47,7 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public ProfileDetailDto getProfileById(Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User not found"));
-        Profile profile = profileRepository.findByUserId(userId).orElseThrow(() -> new BadRequestException("Profile not found"));
+        Profile profile = profileRepository.findByUser_Id(userId).orElseThrow(() -> new BadRequestException("Profile not found"));
 
         return ProfileDetailDto.fromEntity(profile);
     }
