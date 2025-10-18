@@ -70,8 +70,7 @@ public class AuthController {
     })
     @GetMapping
     public UserDto getAuth(){
-        TokenContext context = TokenContextHolder.getContext();
-        long userId = context.getUserId();
+        long userId = TokenContextHolder.getContext().getUserId();
         return userService.getAuth(userId);
     }
 
@@ -144,16 +143,13 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "AccessToken을 블랙리스트 등록 후 Refresh/Session 제거")
     public String logout(@RequestHeader("x-auth-token") String token) {
-        // Access Token 남은 만료 시간 계산
-        long expireSeconds = tokenManager.getTokenRemainingSeconds(token);
-
+        Long userId = TokenContextHolder.getContext().getUserId();
+        long ttl = tokenManager.getTokenRemainingSeconds(token);
         // 블랙리스트에 등록 (남은 유효시간만큼 TTL 유지)
-        tokenBlacklistService.blacklistToken(token, expireSeconds);
-
-        // Refresh & Session 삭제 (Redis)
-        TokenContext context = TokenContextHolder.getContext();
-        userService.logout(context.getUserId());
+        tokenBlacklistService.blacklistToken(token);
+        userService.logout(userId);
 
         return "로그아웃 되었습니다.";
     }

@@ -225,7 +225,7 @@ public class ProfileController {
             @Parameter(description = "업로드할 이미지 파일", required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE, schema = @Schema(type = "string", format = "binary")))
             @RequestPart("file") MultipartFile file
     ) {
-        long userId = TokenContextHolder.getContext().getUserId();
+        Long userId = TokenContextHolder.getContext().getUserId();
         String url = imageService.saveImage(userId, file);
         return ResponseEntity.ok("url" + url);
     }

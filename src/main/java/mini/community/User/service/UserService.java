@@ -29,13 +29,15 @@ public class UserService {
 
     // 토큰 생성
     private TokenResponseDto toTokenResponseDto(User user) {
-        TokenDto tokenDto = TokenDto.builder().userId(user.getId()).build();
-        TokenResponseDto response = tokenManager.generateToken(tokenDto);
+        if (user.getId() == null || user.getId() <= 0) {
+            throw new BadRequestException("User ID not initialized");
+        }
+        TokenResponseDto tokenResponse = tokenManager.generateToken(TokenDto.builder().userId(user.getId()).build());
 
-        // Refresh Token 저장(redis 7일)
+        // Refresh Token 저장(redis 저장 (7일))
         redisTemplate.opsForValue().set(
                 REFRESH_KEY + user.getId(),
-                response.getRefreshToken(),
+                tokenResponse.getRefreshToken(),
                 Duration.ofDays(7));
 
         // 세션 캐시 등록 (로그인 상태 1일 유지)
@@ -44,7 +46,7 @@ public class UserService {
                 "active",
                 Duration.ofDays(1)
         );
-        return response;
+        return tokenResponse;
     }
 
     //회원 가입
@@ -59,11 +61,13 @@ public class UserService {
             throw new BadRequestException("비밀번호가 일치하지 않습니다.");
         }
         // 비밀번호 암호화
-        String encodedPassword = passwordEncoder.encode(registerDto.getPassword());
         // DTO -> Entity
-        User user = registerDto.toEntity(encodedPassword);
+        User user = registerDto.toEntity(passwordEncoder.encode(registerDto.getPassword()));
         // 저장
         userRepository.save(user);
+        // DB flush해서 ID 강제로 채우기
+        userRepository.flush();
+
         //토큰 응답
         return toTokenResponseDto(user);
     }
@@ -74,7 +78,6 @@ public class UserService {
         User user = userRepository.findByIdAndDeletedFalse(userId).orElseThrow(() -> new BadRequestException("존재하지 않거나 이미 삭제된 유저입니다."));
         user.softDelete();
         userRepository.save(user);
-
         // 세션/토큰도 삭제
         logout(userId);
     }
@@ -100,6 +103,8 @@ public class UserService {
         if (Boolean.TRUE.equals(redisTemplate.hasKey(sessionKey))) {
             throw new BadRequestException("이미 로그인 중인 사용자입니다.");
         }
+        // flush로 id확정 보장
+        userRepository.flush();
         // 로그인 허용 후 세션+토큰 저장
         return toTokenResponseDto(user);
     }
@@ -112,8 +117,7 @@ public class UserService {
             throw new BadRequestException("유효하지 않은 리프레시 토큰입니다.");
         }
 
-        TokenDto tokenDto = TokenDto.builder().userId(userId).build();
-        TokenResponseDto newTokens = tokenManager.generateToken(tokenDto);
+        TokenResponseDto newTokens = tokenManager.generateToken(TokenDto.builder().userId(userId).build());
 
         // 기존 refresh 갱신
         redisTemplate.opsForValue().set(
