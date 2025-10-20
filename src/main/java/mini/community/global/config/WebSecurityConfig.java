@@ -37,18 +37,18 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // 인가 정책 정의
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
+                                // 루트 경로 및 정적 리소스 허용
+                                .requestMatchers("/", "/index.html", "/static/**").permitAll()
+                                // swagger 공개 리소스 허용
+                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/api/public/**").permitAll()
+                                .requestMatchers("/api/public/**").permitAll()
                                 //회원가입 / 로그인 / 공개 프로필 API허용
                                 .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/profiles").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/profiles/user/**").permitAll()
+//                                .requestMatchers(HttpMethod.GET,"/").permitAll()
 
-//                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
-//                        .requestMatchers(HttpMethod.PUT, "/api/**").permitAll()
-//                        .requestMatchers(HttpMethod.DELETE, "/api/**").permitAll()
-//                        .requestMatchers("/ping").permitAll()
                                 .anyRequest().authenticated()
                 )
                 // 필터 체인 구성
@@ -62,7 +62,11 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000", "http://localhost:8080")); // local?
+                "http://localhost:3000",
+                "http://localhost:8080",
+                "http://54.180.83.251", // EC2 공인 IP
+                "https//54.180.83.251"  // HTTPS
+                ));
         config.setAllowCredentials(true);
         config.addAllowedMethod("*"); // 모든 메서드 적용
         config.addAllowedHeader("*");

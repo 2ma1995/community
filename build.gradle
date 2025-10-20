@@ -60,6 +60,9 @@ dependencies {
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'io.lettuce:lettuce-core'
+
+    // actuator 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
 
 // ✅ QueryDSL Q타입 생성 위치

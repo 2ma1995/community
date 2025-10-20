@@ -55,3 +55,18 @@ except-uri: /api/public/**,/api/health,/swagger-ui/**,/v3/api-docs/**,/swagger-u
 
 server:
   port: 8080
+
+logging:
+  file:
+    name: app.log
+  level:
+    root: info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

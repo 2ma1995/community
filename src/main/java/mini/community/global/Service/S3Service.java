@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -47,21 +48,42 @@ public class S3Service {
     }
 
     // S3 삭제 기능
-    public void deleteByKey(String fileUrl) {
-//        if (fileUrl == null || fileUrl.isEmpty()) {
-//            log.warn("삭제 요청한 S3키가 null 또는 비어있음");
-//            return;
-//        }
-//        String key = extractS3Key(fileUrl);
-//        if (key == null) return;
-//        amazonS3.deleteObject(bucket, key);
-//        log.info("S3 이미지 삭제 완료: {}", key);
-        try {
-            amazonS3.deleteObject(bucket, fileUrl);
-            log.info("S3 이미지 삭제 완료:{}", fileUrl);
-        } catch (Exception e) {
-            log.warn("S3 삭제 실패:{}", e.getMessage());
+    public void deleteByKeyOrUrl(String keyOrUrl) {
+        if (keyOrUrl == null || keyOrUrl.isBlank()) return;
+
+        String key = keyOrUrl.contains("amazonaws.com")
+                ? extractS3Key(keyOrUrl)
+                : keyOrUrl;
+
+        if (key == null || key.isBlank()) {
+            log.warn("삭제 실패: key 파싱 불가 keyOrUrl={}", keyOrUrl);
+            return;
         }
+        try {
+            amazonS3.deleteObject(bucket, key);
+            log.info("S3 이미지 삭제 완료:{}", key);
+        } catch (Exception e) {
+            log.warn("S3 삭제 실패: {} - {}", key, e.getMessage());
+        }
+    }
+
+    // prefix 아래 모든 객체 삭제
+    public void deleteAllUnderPrefix(String prefix) {
+        if (prefix == null) return;
+        ListObjectsV2Request listReq = new ListObjectsV2Request().withBucketName(bucket).withPrefix(prefix);
+        ListObjectsV2Result result;
+        do {
+            result = amazonS3.listObjectsV2(listReq);
+            if (result.getObjectSummaries().isEmpty()) break;
+
+            List<DeleteObjectsRequest.KeyVersion> keys = new ArrayList<>();
+            for (S3ObjectSummary s : result.getObjectSummaries()) {
+                keys.add(new DeleteObjectsRequest.KeyVersion(s.getKey()));
+            }
+            DeleteObjectsRequest delReq = new DeleteObjectsRequest(bucket).withKeys(keys).withQuiet(true);
+            amazonS3.deleteObjects(delReq);
+        } while (result.isTruncated());
+        log.info("S3 prefix 정리 완료:{}", prefix);
     }
 
     /**
@@ -70,20 +92,18 @@ public class S3Service {
      */
     public String extractS3Key(String s3Url) {
         try {
-            if (s3Url == null) return null;
             String withoutParams = s3Url.split("\\?")[0];
             int idx = withoutParams.indexOf(".amazonaws.com/");
             if (idx == -1) return null;
             return withoutParams.substring(idx + ".amazonaws.com/".length());
         } catch (Exception e) {
-            log.warn("S3 Key 추출 중 오류 발생: {}", e.getMessage());
             return null;
         }
     }
 
-    // s3에서 파일 다운로드 (byte[] 반환)
-    public byte[] downloadFile(String s3Key) {
-        try (S3Object s3Object = amazonS3.getObject(bucket, s3Key);
+    // s3에서 파일 다운로드 (byte[] 반환) / 파일 비교 (중복 업로드 방지)
+    public byte[] downloadFile(String key) {
+        try (S3Object s3Object = amazonS3.getObject(bucket, key);
              S3ObjectInputStream inputStream = s3Object.getObjectContent()) {
             return inputStream.readAllBytes();
         } catch (Exception e) {
@@ -104,10 +124,10 @@ public class S3Service {
     }
 
     // byte[] 해시 계산 (기존 s3 파일 비교)
-    public String calculateFileHash(byte[] fileBytes) {
+    public String calculateFileHash(byte[] bytes) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(fileBytes);
+            byte[] hash = digest.digest(bytes);
             return Base64.getEncoder().encodeToString(hash);
         } catch (Exception e) {
             throw new RuntimeException("해시 계산 실패", e);
@@ -115,23 +135,40 @@ public class S3Service {
     }
 
     // S3 내 동일 해시 파일 존재 확인 (중복 업로드 방지용)
-    public boolean existsSameFile(String directory, String newFileHash) {
-        try {
-            ListObjectsV2Result result = amazonS3.listObjectsV2(bucket, directory + "/");
-            for (S3ObjectSummary obj : result.getObjectSummaries()) {
-                byte[] bytes = downloadFile(obj.getKey());
-                if (bytes != null) {
-                    String existingHash = calculateFileHash(bytes);
-                    if (existingHash.equals(newFileHash)) {
-                        log.info("같은 해시의 파일 발견: {}", obj.getKey());
+    public boolean existsSameFile(String prefix, String newFileHash) {
+        ListObjectsV2Request listReq = new ListObjectsV2Request().withBucketName(bucket).withPrefix(prefix);
+        ListObjectsV2Result result;
+        do{
+            result = amazonS3.listObjectsV2(listReq);
+            for (S3ObjectSummary s : result.getObjectSummaries()) {
+                byte[] bytes = downloadFile(s.getKey());
+                if (bytes != null) continue;
+                    String hash = calculateFileHash(bytes);
+                    if (newFileHash.equals(hash)) {
+                        log.info("같은 해시의 파일 발견: {}", s.getKey());
                         return true;
                     }
                 }
-            }
-        } catch (Exception e) {
-            log.warn("중복파일 검색 중 오류: {}", e.getMessage());
-        }
+        } while (result.isTruncated());
         return false;
+    }
+
+    // 유저 이미지 정리
+    public void cleanupUserImages(Long userId, String currentImage) {
+        // 디렉토리 정리
+        String currentPrefix = "profile/" + userId + "/";
+        deleteAllUnderPrefix(currentPrefix);
+
+        // 레거시(언더바) 규칙 정리: profile/{userId}_ 로 시작하는 것
+        deleteAllUnderPrefix("profile/" + userId + "_");
+
+        // DB가 가리키는 현재 URL이 있다면 확실히 제거 (키 직삭제)
+        if (currentImage != null && currentImage.contains("amazonaws.com")) {
+            String s3Key = extractS3Key(currentImage);
+            if (s3Key != null) {
+                deleteByKeyOrUrl(s3Key);
+            }
+        }
     }
 
 }
