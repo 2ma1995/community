@@ -39,4 +39,5 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             pkill -f 'java -jar community-0.0.1-SNAPSHOT.jar' || true
-            setsid nohup java -jar /home/ubuntu/community-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod > /home/ubuntu/app.log 2>&1 < /dev/null &
+            mkdir -p /home/ubuntu/app  # 로그 폴더 없으면 만들어주고
+            nohup java -jar /home/ubuntu/community-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod > /home/ubuntu/app/app.log 2>&1 &
